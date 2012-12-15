@@ -48,6 +48,20 @@ public class hw1q1seq {
         return total / grades.length;
     }
 
+    public static double calculateFNS(int i, int numStudents) {
+        if (i < numStudents * 0.1) {
+            return 4.0;
+        } else if (i < numStudents * 0.3) {
+            return 3.0;
+        } else if (i < numStudents * 0.6) {
+            return 2.0;
+        } else if (i < numStudents * 0.8) {
+            return 1.0;
+        } else {
+            return 0.0;
+        }
+    }
+
     public static void main (String [] args) {
         if (args.length < 3) {
             System.out.println("Usage: java hw1q1seq m n seed");
@@ -66,23 +80,11 @@ public class hw1q1seq {
         System.out.println(sortedINSs);
         double[] fnss = new double[m];
         for (int i = 0; i < m; i++) {
-            double fns;
-            if (i < m * 0.1) {
-                fns = 4.0;
-            } else if (i < m * 0.3) {
-                fns = 3.0;
-            } else if (i < m * 0.6) {
-                fns = 2.0;
-            } else if (i < m * 0.8) {
-                fns = 1.0;
-            } else {
-                fns = 0.0;
-            }
-            fnss[sortedINSs.get(i).student] = fns;
+            fnss[sortedINSs.get(i).student] = calculateFNS(i, m);
         }
         for (int i = 0; i < m; i++) {
-            System.out.println("#" + (i + 1) + ": INS=" + df.format(inss.get(i).ins)
-                + ", FNS=" + fnss[i]);
+            System.out.println("#" + (i + 1) + ":\tINS=" + df.format(inss.get(i).ins)
+                + "\tFNS=" + fnss[i]);
         }
     }
 }
