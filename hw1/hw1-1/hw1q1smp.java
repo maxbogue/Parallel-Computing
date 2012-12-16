@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.rit.pj.IntegerForLoop;
+import edu.rit.pj.ParallelRegion;
+import edu.rit.pj.ParallelTeam;
+
 /**
  * Class for parallel version of homework 1 question 1.
  */
@@ -106,6 +110,7 @@ public class hw1q1smp {
      * @param args  "m n seed"
      */
     public static void main (String [] args) {
+        Comm.init(args);
 
         // Read arguments.
         if (args.length < 3) {
@@ -121,9 +126,17 @@ public class hw1q1smp {
 
         // Calculate the INS of each student.
         INS[] inss = new INS[m];
-        for (int i = 0; i < m; i++) {
-            inss[i] = new INS(i, calculateINS(studentGrades[i]));
-        }
+        new ParallelTeam().execute(new ParallelRegion() {
+            public void run() throws Exception {
+                execute(0, m - 1, new IntegerForLoop() {
+                    public void run(int first, int last) {
+                        for (int i = first; i <= last; i++) {
+                            inss[i] = new INS(i, calculateINS(studentGrades[i]));
+                        }
+                    }
+                });
+            }
+        });
 
         // Sort the INS list.
         List<INS> sortedINSs = Arrays.asList(inss);
