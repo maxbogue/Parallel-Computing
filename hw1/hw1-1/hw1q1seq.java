@@ -1,5 +1,6 @@
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -119,13 +120,13 @@ public class hw1q1seq {
         double[][] studentGrades = randomMatrix(m, n, seed);
 
         // Calculate the INS of each student.
-        List<INS> inss = new ArrayList<INS>(m);
+        INS[] inss = new INS[m];
         for (int i = 0; i < m; i++) {
-            inss.add(i, new INS(i, calculateINS(studentGrades[i])));
+            inss[i] = new INS(i, calculateINS(studentGrades[i]));
         }
 
         // Sort the INS list.
-        List<INS> sortedINSs = new ArrayList<INS>(inss);
+        List<INS> sortedINSs = Arrays.asList(inss);
         Collections.sort(sortedINSs, Collections.reverseOrder());
 
         // Calculate the FNS of each student.
@@ -138,7 +139,7 @@ public class hw1q1seq {
 
         // Print the results.
         for (int i = 0; i < m; i++) {
-            System.out.println("#" + (i + 1) + ":\tINS=" + df.format(inss.get(i).ins)
+            System.out.println("#" + (i + 1) + ":\tINS=" + df.format(inss[i].ins)
                 + "\tFNS=" + fnss[i]);
         }
     }
