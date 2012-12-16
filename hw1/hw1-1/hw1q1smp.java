@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import edu.rit.pj.Comm;
 import edu.rit.pj.IntegerForLoop;
 import edu.rit.pj.ParallelRegion;
 import edu.rit.pj.ParallelTeam;
@@ -109,7 +110,7 @@ public class hw1q1smp {
      *
      * @param args  "m n seed"
      */
-    public static void main (String [] args) {
+    public static void main (String [] args) throws Exception {
         Comm.init(args);
 
         // Read arguments.
@@ -117,15 +118,18 @@ public class hw1q1smp {
             System.out.println("Usage: java hw1q1seq m n seed");
             System.exit(1);
         }
-        int m = Integer.parseInt(args[0]);
-        int n = Integer.parseInt(args[1]);
+        final int m = Integer.parseInt(args[0]);
+        final int n = Integer.parseInt(args[1]);
         long seed = Long.parseLong(args[2]);
 
         // Generate the matrix.
-        double[][] studentGrades = randomMatrix(m, n, seed);
+        final double[][] studentGrades = randomMatrix(m, n, seed);
+
+        // Start timing.
+        long t1 = System.currentTimeMillis();
 
         // Calculate the INS of each student.
-        INS[] inss = new INS[m];
+        final INS[] inss = new INS[m];
         new ParallelTeam().execute(new ParallelRegion() {
             public void run() throws Exception {
                 execute(0, m - 1, new IntegerForLoop() {
@@ -139,21 +143,33 @@ public class hw1q1smp {
         });
 
         // Sort the INS list.
-        List<INS> sortedINSs = Arrays.asList(inss);
+        final List<INS> sortedINSs = Arrays.asList(inss);
         Collections.sort(sortedINSs, Collections.reverseOrder());
 
         // Calculate the FNS of each student.
-        double[] fnss = new double[m];
-        for (int i = 0; i < m; i++) {
-            // i is the rank from the sorted INS list; we then have to find the
-            // matching student ID to store the FNS in the right place.
-            fnss[sortedINSs.get(i).student] = calculateFNS(i, m);
-        }
+        final double[] fnss = new double[m];
+        new ParallelTeam().execute(new ParallelRegion() {
+            public void run() throws Exception {
+                execute(0, m - 1, new IntegerForLoop() {
+                    public void run(int first, int last) {
+                        for (int i = first; i <= last; i++) {
+                            // i is the rank from the sorted INS list; we then have to find the
+                            // matching student ID to store the FNS in the right place.
+                            fnss[sortedINSs.get(i).student] = calculateFNS(i, m);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Stop timing.
+        long t2 = System.currentTimeMillis();
 
         // Print the results.
         for (int i = 0; i < m; i++) {
             System.out.println("#" + (i + 1) + ":\tINS=" + df.format(inss[i].ins)
                 + "\tFNS=" + fnss[i]);
         }
+        System.out.println((t2-t1) + " ms");
     }
 }

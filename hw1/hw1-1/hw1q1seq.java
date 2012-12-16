@@ -119,6 +119,9 @@ public class hw1q1seq {
         // Generate the matrix.
         double[][] studentGrades = randomMatrix(m, n, seed);
 
+        // Start timing.
+        long t1 = System.currentTimeMillis();
+
         // Calculate the INS of each student.
         INS[] inss = new INS[m];
         for (int i = 0; i < m; i++) {
@@ -137,10 +140,14 @@ public class hw1q1seq {
             fnss[sortedINSs.get(i).student] = calculateFNS(i, m);
         }
 
+        // Stop timing.
+        long t2 = System.currentTimeMillis();
+
         // Print the results.
         for (int i = 0; i < m; i++) {
             System.out.println("#" + (i + 1) + ":\tINS=" + df.format(inss[i].ins)
                 + "\tFNS=" + fnss[i]);
         }
+        System.out.println((t2-t1) + " ms");
     }
 }
