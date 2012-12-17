@@ -1,10 +1,8 @@
-import java.io.*;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import edu.rit.pj.Comm;
 import edu.rit.pj.IntegerForLoop;
@@ -16,8 +14,12 @@ import edu.rit.pj.ParallelTeam;
  */
 public class hw1q2smp {
 
-    private static int palindromeCount = 0;
-
+    /**
+     * Determines whether or not a string is a palindrome.
+     *
+     * @param s     The string to test.
+     * @return      Whether s is a palindrome.
+     */
     public static boolean isPalindrome(String s) {
         int n = s.length();
         int i = 0;
@@ -46,7 +48,7 @@ public class hw1q2smp {
     /**
      * Main!
      *
-     * @param args  "fileName"
+     * @param args "fileName"
      */
     public static void main (String [] args) throws Exception {
         Comm.init(args);
@@ -69,7 +71,8 @@ public class hw1q2smp {
         // Start timing.
         long t1 = System.currentTimeMillis();
 
-        palindromeCount = 0;
+        // Need a thread-safe structure to collect the palindromes in.
+        final Collection<String> palindromes = new ConcurrentLinkedQueue<String>();
 
         // Calculate which strings are palindromes.
         new ParallelTeam().execute(new ParallelRegion() {
@@ -78,8 +81,7 @@ public class hw1q2smp {
                     public void run(int first, int last) {
                         for (int i = first; i <= last; i++) {
                             if (isPalindrome(list[i])) {
-                                palindromeCount++;
-                                System.out.println(list[i]);
+                                palindromes.add(list[i]);
                             }
                         }
                     }
@@ -91,14 +93,25 @@ public class hw1q2smp {
         long t2 = System.currentTimeMillis();
 
         // Print the results.
-        System.out.println(palindromeCount + " palindromes found.");
+        for (String s : palindromes) {
+            System.out.println(s);
+        }
+        System.out.println(palindromes.size() + " palindromes found.");
         System.out.println((t2-t1) + " ms");
     }
 
+    /**
+     * Test helper function
+     *
+     * @param s The string to test.
+     */
     private static void testPalindrome(String s) {
         System.out.println(s + ": " + isPalindrome(s));
     }
 
+    /**
+     * Runs some sanity checks.
+     */
     private static void test() {
         testPalindrome("");
         testPalindrome("a");
@@ -114,4 +127,5 @@ public class hw1q2smp {
         testPalindrome("abc");
         testPalindrome("never odd or even");
     }
+
 }
