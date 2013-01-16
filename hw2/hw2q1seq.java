@@ -173,18 +173,14 @@ class JuliaSetSeq {
 
                 // Iterate until convergence.
                 int i = 0;
-                double aold = 0.0;
-                double bold = 0.0;
-                double a = 0.0;
-                double b = 0.0;
-                double zmagsqr = 0.0;
-                while (i < maxiter && zmagsqr <= 4.0) {
-                    ++ i;
-                    a = aold*aold - bold*bold + x;
-                    b = 2.0*aold*bold + y;
-                    zmagsqr = a*a + b*b;
-                    aold = a;
-                    bold = b;
+                double x_;
+                double y_;
+                while (i < maxiter && x*x + y*y <= 4.0) {
+                    x_ = x;
+                    y_ = y;
+                    x = (x_ * x_ * x_) - (3 * x_ * y_ * y_) + dx;
+                    y = (3 * x_ * x_ * y_) - (y_ * y_ * y_) + dy;
+                    i++;
                 }
 
                 // Record number of iterations for pixel.
