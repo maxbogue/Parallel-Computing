@@ -1,8 +1,8 @@
 //******************************************************************************
 //
-// File:    MandelbrotSetSeq.java
+// File:    JuliaSetSeq.java
 // Package: edu.rit.smp.fractal
-// Unit:    Class edu.rit.smp.fractal.MandelbrotSetSeq
+// Unit:    Class edu.rit.smp.fractal.JuliaSetSeq
 //
 // This Java source file is copyright (C) 2007 by Alan Kaminsky. All rights
 // reserved. For further information, contact the author, Alan Kaminsky, at
@@ -37,16 +37,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 /**
- * Class MandelbrotSetSeq is a sequential program that calculates the Mandelbrot
- * Set.
+ * Class JuliaSetSeq is a sequential program that calculates the Julia Set.
  * <P>
- * Usage: java edu.rit.smp.fractal.MandelbrotSetSeq <I>width</I> <I>height</I>
- * <I>xcenter</I> <I>ycenter</I> <I>resolution</I> <I>maxiter</I> <I>gamma</I>
- * <I>filename</I>
+ * Usage: java edu.rit.smp.fractal.JuliaSetSeq <I>width</I> <I>height</I>
+ * <I>xcenter</I> <I>ycenter</I> <I>dx</I> <I>dy</I> <I>resolution</I>
+ * <I>maxiter</I> <I>gamma</I> <I>filename</I>
  * <BR><I>width</I> = Image width (pixels)
  * <BR><I>height</I> = Image height (pixels)
  * <BR><I>xcenter</I> = X coordinate of center point
  * <BR><I>ycenter</I> = Y coordinate of center point
+ * <BR><I>dx</I> = the real component of C
+ * <BR><I>dy</I> = the imaginary component of C
  * <BR><I>resolution</I> = Pixels per unit
  * <BR><I>maxiter</I> = Maximum number of iterations
  * <BR><I>gamma</I> = Used to calculate pixel hues
@@ -58,19 +59,19 @@ import java.io.FileOutputStream;
  * program takes each pixel's location as a complex number <I>c</I> and performs
  * the following iteration:
  * <P>
- * <I>z</I><SUB>0</SUB> = 0
- * <BR><I>z</I><SUB><I>i</I>+1</SUB> = <I>z</I><SUB><I>i</I></SUB><SUP>2</SUP> + <I>c</I>
+ * <I>z</I><SUB>0</SUB> = x + yi
+ * <BR><I>z</I><SUB><I>i</I>+1</SUB> = <I>z</I><SUB><I>i</I></SUB><SUP>3</SUP> + <I>C</I>
  * <P>
  * until <I>z</I><SUB><I>i</I></SUB>'s magnitude becomes greater than or equal
  * to 2, or <I>i</I> reaches a limit of <I>maxiter</I>. The complex numbers
  * <I>c</I> where <I>i</I> reaches a limit of <I>maxiter</I> are considered to
- * be in the Mandelbrot Set. (Actually, a number is in the Mandelbrot Set only
+ * be in the Julia Set. (Actually, a number is in the Julia Set only
  * if the iteration would continue forever without <I>z</I><SUB><I>i</I></SUB>
  * becoming infinite; the foregoing is just an approximation.) The program
  * creates an image with the pixels corresponding to the complex numbers
  * <I>c</I> and the pixels' colors corresponding to the value of <I>i</I>
  * achieved by the iteration. Following the traditional practice, points in the
- * Mandelbrot set are black, and the other points are brightly colored in a
+ * Julia set are black, and the other points are brightly colored in a
  * range of colors depending on <I>i</I>. The exact hue of each pixel is
  * (<I>i</I>/<I>maxiter</I>)<SUP><I>gamma</I></SUP>. The image is stored in a
  * Parallel Java Graphics (PJG) file specified on the command line.
@@ -81,12 +82,13 @@ import java.io.FileOutputStream;
  * running time on a parallel processor.
  *
  * @author  Alan Kaminsky
- * @version 02-Nov-2007
+ * @author  Max Bogue
+ * @version 16-Jan-2013
  */
-class MandelbrotSetSeq {
+class JuliaSetSeq {
 
     // Prevent construction.
-    private MandelbrotSetSeq() {}
+    private JuliaSetSeq() {}
 
 // Program shared variables.
 
@@ -95,6 +97,8 @@ class MandelbrotSetSeq {
     static int height;
     static double xcenter;
     static double ycenter;
+    static double dx;
+    static double dy;
     static double resolution;
     static int maxiter;
     static double gamma;
@@ -114,7 +118,7 @@ class MandelbrotSetSeq {
 // Main program.
 
     /**
-     * Mandelbrot Set main program.
+     * Julia Set main program.
      */
     public static void main(String[] args) throws Exception {
         //Comm.init (args);
@@ -128,10 +132,12 @@ class MandelbrotSetSeq {
         height = Integer.parseInt (args[1]);
         xcenter = Double.parseDouble (args[2]);
         ycenter = Double.parseDouble (args[3]);
-        resolution = Double.parseDouble (args[4]);
-        maxiter = Integer.parseInt (args[5]);
-        gamma = Double.parseDouble (args[6]);
-        filename = new File (args[7]);
+        dx = Double.parseDouble (args[4]);
+        dy = Double.parseDouble (args[5]);
+        resolution = Double.parseDouble (args[6]);
+        maxiter = Integer.parseInt (args[7]);
+        gamma = Double.parseDouble (args[8]);
+        filename = new File (args[9]);
 
         // Initial pixel offsets from center.
         xoffset = -(width - 1) / 2;
@@ -160,6 +166,10 @@ class MandelbrotSetSeq {
 
             for (int c = 0; c < width; ++ c) {
                 double x = xcenter + (xoffset + c) / resolution;
+
+                // (x + yi)^3 = (x^2 - y^2 + 2xyi)(x + yi)
+                // = x^3 - xy^2 + 2x^2yi + x^2yi - y^3i - 2xy^2
+                // = x^3 - 3xy^2 + i(3x^2y - y^3)
 
                 // Iterate until convergence.
                 int i = 0;
@@ -206,7 +216,7 @@ class MandelbrotSetSeq {
      * Print a usage message and exit.
      */
     private static void usage() {
-        System.err.println ("Usage: java edu.rit.smp.fractal.MandelbrotSetSeq <width> <height> <xcenter> <ycenter> <resolution> <maxiter> <gamma> <filename>");
+        System.err.println ("Usage: java edu.rit.smp.fractal.JuliaSetSeq <width> <height> <xcenter> <ycenter> <resolution> <maxiter> <gamma> <filename>");
         System.err.println ("<width> = Image width (pixels)");
         System.err.println ("<height> = Image height (pixels)");
         System.err.println ("<xcenter> = X coordinate of center point");
