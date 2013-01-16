@@ -121,41 +121,41 @@ class JuliaSetSeq {
      * Julia Set main program.
      */
     public static void main(String[] args) throws Exception {
-        //Comm.init (args);
+        //Comm.init(args);
 
         // Start timing.
         long t1 = System.currentTimeMillis();
 
         // Validate command line arguments.
         if (args.length != 8) usage();
-        width = Integer.parseInt (args[0]);
-        height = Integer.parseInt (args[1]);
-        xcenter = Double.parseDouble (args[2]);
-        ycenter = Double.parseDouble (args[3]);
-        dx = Double.parseDouble (args[4]);
-        dy = Double.parseDouble (args[5]);
-        resolution = Double.parseDouble (args[6]);
-        maxiter = Integer.parseInt (args[7]);
-        gamma = Double.parseDouble (args[8]);
-        filename = new File (args[9]);
+        width = Integer.parseInt(args[0]);
+        height = Integer.parseInt(args[1]);
+        xcenter = Double.parseDouble(args[2]);
+        ycenter = Double.parseDouble(args[3]);
+        dx = Double.parseDouble(args[4]);
+        dy = Double.parseDouble(args[5]);
+        resolution = Double.parseDouble(args[6]);
+        maxiter = Integer.parseInt(args[7]);
+        gamma = Double.parseDouble(args[8]);
+        filename = new File(args[9]);
 
         // Initial pixel offsets from center.
         xoffset = -(width - 1) / 2;
         yoffset = (height - 1) / 2;
 
         // Create image matrix to store results.
-        matrix = new int [height] [width];
-        image = new PJGColorImage (height, width, matrix);
+        matrix = new int[height][width];
+        image = new PJGColorImage(height, width, matrix);
 
         // Create table of hues for different iteration counts.
-        huetable = new int [maxiter+1];
+        huetable = new int[maxiter+1];
         for (int i = 0; i < maxiter; ++ i) {
             huetable[i] = HSB.pack
                 (/*hue*/ (float) Math.pow (((double)i)/((double)maxiter),gamma),
                  /*sat*/ 1.0f,
                  /*bri*/ 1.0f);
         }
-        huetable[maxiter] = HSB.pack (1.0f, 1.0f, 0.0f);
+        huetable[maxiter] = HSB.pack(1.0f, 1.0f, 0.0f);
 
         long t2 = System.currentTimeMillis();
 
@@ -198,16 +198,16 @@ class JuliaSetSeq {
         PJGImage.Writer writer =
             image.prepareToWrite
                 (new BufferedOutputStream
-                    (new FileOutputStream (filename)));
+                    (new FileOutputStream(filename)));
         writer.write();
         writer.close();
 
         // Stop timing.
         long t4 = System.currentTimeMillis();
-        System.out.println ((t2-t1) + " msec pre");
-        System.out.println ((t3-t2) + " msec calc");
-        System.out.println ((t4-t3) + " msec post");
-        System.out.println ((t4-t1) + " msec total");
+        System.out.println((t2-t1) + " msec pre");
+        System.out.println((t3-t2) + " msec calc");
+        System.out.println((t4-t3) + " msec post");
+        System.out.println((t4-t1) + " msec total");
     }
 
 // Hidden operations.
@@ -216,16 +216,18 @@ class JuliaSetSeq {
      * Print a usage message and exit.
      */
     private static void usage() {
-        System.err.println ("Usage: java edu.rit.smp.fractal.JuliaSetSeq <width> <height> <xcenter> <ycenter> <resolution> <maxiter> <gamma> <filename>");
-        System.err.println ("<width> = Image width (pixels)");
-        System.err.println ("<height> = Image height (pixels)");
-        System.err.println ("<xcenter> = X coordinate of center point");
-        System.err.println ("<ycenter> = Y coordinate of center point");
-        System.err.println ("<resolution> = Pixels per unit");
-        System.err.println ("<maxiter> = Maximum number of iterations");
-        System.err.println ("<gamma> = Used to calculate pixel hues");
-        System.err.println ("<filename> = PJG image file name");
-        System.exit (1);
+        System.err.println("Usage: java edu.rit.smp.fractal.JuliaSetSeq <width> <height> <xcenter> <ycenter> <resolution> <maxiter> <gamma> <filename>");
+        System.err.println("<width> = Image width (pixels)");
+        System.err.println("<height> = Image height (pixels)");
+        System.err.println("<xcenter> = X coordinate of center point");
+        System.err.println("<ycenter> = Y coordinate of center point");
+        System.err.println("<dx> = real component of C");
+        System.err.println("<dy> = imaginary component of C");
+        System.err.println("<resolution> = Pixels per unit");
+        System.err.println("<maxiter> = Maximum number of iterations");
+        System.err.println("<gamma> = Used to calculate pixel hues");
+        System.err.println("<filename> = PJG image file name");
+        System.exit(1);
     }
 
 }
