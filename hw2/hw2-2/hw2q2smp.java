@@ -7,9 +7,9 @@ import edu.rit.pj.reduction.SharedLong;
 /**
  * Compute Collatz numbers in parallel.
  */
-class collatz_smp {
+public class hw2q2smp {
     
-    private collatz_smp() {}
+    private hw2q2smp() {}
 
     /**
      * Computes the number of steps to reach 1 using the Collatz conjecture.

@@ -1,6 +1,6 @@
-class collatz_seq {
+public class hw2q2seq {
     
-    private collatz_seq() {}
+    private hw2q2seq() {}
 
     public static long collatz(long n, long max_iter) {
         long i = 0;
