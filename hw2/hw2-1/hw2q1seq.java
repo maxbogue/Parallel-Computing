@@ -23,8 +23,6 @@
 //
 //******************************************************************************
 
-package edu.rit.smp.fractal;
-
 import edu.rit.color.HSB;
 
 import edu.rit.image.PJGColorImage;
@@ -85,10 +83,7 @@ import java.io.FileOutputStream;
  * @author  Max Bogue
  * @version 16-Jan-2013
  */
-class JuliaSetSeq {
-
-    // Prevent construction.
-    private JuliaSetSeq() {}
+public class hw2q1seq {
 
 // Program shared variables.
 
@@ -127,7 +122,7 @@ class JuliaSetSeq {
         long t1 = System.currentTimeMillis();
 
         // Validate command line arguments.
-        if (args.length != 8) usage();
+        if (args.length != 10) usage();
         width = Integer.parseInt(args[0]);
         height = Integer.parseInt(args[1]);
         xcenter = Double.parseDouble(args[2]);
@@ -162,10 +157,11 @@ class JuliaSetSeq {
         // Compute all rows and columns.
         for (int r = 0; r < height; ++ r) {
             int[] matrix_r = matrix[r];
-            double y = ycenter + (yoffset - r) / resolution;
+            double y_const = ycenter + (yoffset - r) / resolution;
 
             for (int c = 0; c < width; ++ c) {
                 double x = xcenter + (xoffset + c) / resolution;
+                double y = y_const;
 
                 // (x + yi)^3 = (x^2 - y^2 + 2xyi)(x + yi)
                 // = x^3 - xy^2 + 2x^2yi + x^2yi - y^3i - 2xy^2
@@ -176,10 +172,10 @@ class JuliaSetSeq {
                 double x_;
                 double y_;
                 while (i < maxiter && x*x + y*y <= 4.0) {
-                    x_ = x;
-                    y_ = y;
-                    x = (x_ * x_ * x_) - (3 * x_ * y_ * y_) + dx;
-                    y = (3 * x_ * x_ * y_) - (y_ * y_ * y_) + dy;
+                    x_ = (x * x * x) - (3 * x * y * y) + dx;
+                    y_ = (3 * x * x * y) - (y * y * y) + dy;
+                    x = x_;
+                    y = y_;
                     i++;
                 }
 
