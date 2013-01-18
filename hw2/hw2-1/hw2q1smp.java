@@ -162,6 +162,9 @@ class hw2q1smp {
         new ParallelTeam().execute(new ParallelRegion() {
             public void run() throws Exception {
                 execute(0, height - 1, new IntegerForLoop() {
+                    public IntegerSchedule schedule() {
+                        return IntegerSchedule.guided();
+                    }
                     public void run(int first, int last) {
                         for (int r = first; r <= last; r++) {
                             int[] matrix_r = matrix[r];
