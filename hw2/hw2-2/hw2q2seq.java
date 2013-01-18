@@ -35,7 +35,7 @@ class collatz_seq {
         // Stop timing.
         long t2 = System.currentTimeMillis();
         System.out.println((t2-t1) + " ms");
-        
+        System.out.println(count);
     }
 
 }
