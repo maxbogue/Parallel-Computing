@@ -28,7 +28,11 @@ import edu.rit.color.HSB;
 import edu.rit.image.PJGColorImage;
 import edu.rit.image.PJGImage;
 
-//import edu.rit.pj.Comm;
+import edu.rit.pj.Comm;
+import edu.rit.pj.IntegerForLoop;
+import edu.rit.pj.IntegerSchedule;
+import edu.rit.pj.ParallelRegion;
+import edu.rit.pj.ParallelTeam;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -83,7 +87,7 @@ import java.io.FileOutputStream;
  * @author  Max Bogue
  * @version 16-Jan-2013
  */
-public class hw2q1seq {
+class hw2q1smp {
 
 // Program shared variables.
 
@@ -116,7 +120,7 @@ public class hw2q1seq {
      * Julia Set main program.
      */
     public static void main(String[] args) throws Exception {
-        //Comm.init(args);
+        Comm.init(args);
 
         // Start timing.
         long t1 = System.currentTimeMillis();
@@ -155,34 +159,42 @@ public class hw2q1seq {
         long t2 = System.currentTimeMillis();
 
         // Compute all rows and columns.
-        for (int r = 0; r < height; ++ r) {
-            int[] matrix_r = matrix[r];
-            double y_const = ycenter + (yoffset - r) / resolution;
+        new ParallelTeam().execute(new ParallelRegion() {
+            public void run() throws Exception {
+                execute(0, height - 1, new IntegerForLoop() {
+                    public void run(int first, int last) {
+                        for (int r = first; r <= last; r++) {
+                            int[] matrix_r = matrix[r];
+                            double y_const = ycenter + (yoffset - r) / resolution;
 
-            for (int c = 0; c < width; ++ c) {
-                double x = xcenter + (xoffset + c) / resolution;
-                double y = y_const;
+                            for (int c = 0; c < width; c++) {
+                                double x = xcenter + (xoffset + c) / resolution;
+                                double y = y_const;
 
-                // (x + yi)^3 = (x^2 - y^2 + 2xyi)(x + yi)
-                // = x^3 - xy^2 + 2x^2yi + x^2yi - y^3i - 2xy^2
-                // = x^3 - 3xy^2 + i(3x^2y - y^3)
+                                // (x + yi)^3 = (x^2 - y^2 + 2xyi)(x + yi)
+                                // = x^3 - xy^2 + 2x^2yi + x^2yi - y^3i - 2xy^2
+                                // = x^3 - 3xy^2 + i(3x^2y - y^3)
 
-                // Iterate until convergence.
-                int i = 0;
-                double x_;
-                double y_;
-                while (i < maxiter && x*x + y*y <= 4.0) {
-                    x_ = (x * x * x) - (3 * x * y * y) + dx;
-                    y_ = (3 * x * x * y) - (y * y * y) + dy;
-                    x = x_;
-                    y = y_;
-                    i++;
-                }
+                                // Iterate until convergence.
+                                int i = 0;
+                                double x_;
+                                double y_;
+                                while (i < maxiter && x*x + y*y <= 4.0) {
+                                    x_ = (x * x * x) - (3 * x * y * y) + dx;
+                                    y_ = (3 * x * x * y) - (y * y * y) + dy;
+                                    x = x_;
+                                    y = y_;
+                                    i++;
+                                }
 
-                // Record number of iterations for pixel.
-                matrix_r[c] = huetable[i];
+                                // Record number of iterations for pixel.
+                                matrix_r[c] = huetable[i];
+                            }
+                        }
+                    }
+                });
             }
-        }
+        });
 
         long t3 = System.currentTimeMillis();
 
