@@ -1,9 +1,16 @@
+import edu.rit.pj.Comm;
+import edu.rit.pj.IntegerForLoop;
+import edu.rit.pj.IntegerSchedule;
+import edu.rit.pj.ParallelRegion;
+import edu.rit.pj.ParallelTeam;
+import edu.rit.pj.reduction.SharedBooleanArray;
+
 /**
  * Finds prime numbers using the Sieve of Eratosthenes.
  */
-public class hw2q5seq {
+public class hw2q5smp {
 
-    private hw2q5seq() {}
+    private hw2q5smp() {}
 
     /**
      * Count the number of primes <= n using the Sieve of Eratosthenes.
@@ -11,27 +18,38 @@ public class hw2q5seq {
      * @param n     The maximum number to check for primality.
      * @return      The number of primes between 2 and n.
      */
-    public static int eratosthenes(int n) {
+    public static int eratosthenes(final int n) throws Exception {
 
         // Init flag array.
-        boolean[] isPrime = new boolean[n + 1];
+        final SharedBooleanArray isPrime = new SharedBooleanArray(n + 1);
         for (int i = 0; i <= n; i++) {
-            isPrime[i] = true;
+            isPrime.set(i, true);
         }
 
         // Perform the Sieve.
-        for (int k = 2; k * k <= n; k++) {
-            if (isPrime[k]) {
-                for (int i = k * k; i <= n; i += k) {
-                    isPrime[i] = false;
-                }
+        new ParallelTeam().execute(new ParallelRegion() {
+            public void run() throws Exception {
+                execute(2, (int)Math.sqrt(n), new IntegerForLoop() {
+                    public IntegerSchedule schedule() {
+                        return IntegerSchedule.dynamic();
+                    }
+                    public void run(int first, int last) {
+                        for (int k = first; k <= last; k++) {
+                            if (isPrime.get(k)) {
+                                for (int i = k * k; i <= n; i += k) {
+                                    isPrime.set(i, false);
+                                }
+                            }
+                        }
+                    }
+                });
             }
-        }
+        });
 
         // Count the primes remaining.
         int count = 0;
         for (int i = 2; i <= n; i++) {
-            if (isPrime[i]) {
+            if (isPrime.get(i)) {
                 count++;
             }
         }
