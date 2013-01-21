@@ -21,23 +21,33 @@ public class hw2q5smp {
     public static int eratosthenes(final int n) throws Exception {
 
         // Init flag array.
-        final SharedBooleanArray isPrime = new SharedBooleanArray(n + 1);
+        // Note: I decided to not use a SharedBooleanArray because it made the
+        // program run 3x slower and there are no race conditions in this
+        // algorithm when using a naive array.
+        final boolean[] isPrime = new boolean[n + 1];
         for (int i = 0; i <= n; i++) {
-            isPrime.set(i, true);
+            isPrime[i] = true;
         }
+        //final SharedBooleanArray isPrime = new SharedBooleanArray(n + 1);
+        //final boolean[] test = new boolean[2];
+        //for (int i = 0; i <= n; i++) {
+            //isPrime.set(i, true);
+        //}
 
         // Perform the Sieve.
         new ParallelTeam().execute(new ParallelRegion() {
             public void run() throws Exception {
                 execute(2, (int)Math.sqrt(n), new IntegerForLoop() {
                     public IntegerSchedule schedule() {
+                        // Dynamic schedule because we want to do them as close
+                        // to sequentially as possible.
                         return IntegerSchedule.dynamic();
                     }
                     public void run(int first, int last) {
                         for (int k = first; k <= last; k++) {
-                            if (isPrime.get(k)) {
+                            if (isPrime[k]) {
                                 for (int i = k * k; i <= n; i += k) {
-                                    isPrime.set(i, false);
+                                    isPrime[i] = false;
                                 }
                             }
                         }
@@ -49,7 +59,7 @@ public class hw2q5smp {
         // Count the primes remaining.
         int count = 0;
         for (int i = 2; i <= n; i++) {
-            if (isPrime.get(i)) {
+            if (isPrime[i]) {
                 count++;
             }
         }
@@ -59,7 +69,7 @@ public class hw2q5smp {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
-            System.out.println("Usage: java hw2q5seq <n>");
+            System.out.println("Usage: java hw2q5smp <n>");
         }
         int n = Integer.parseInt(args[0]);
 
