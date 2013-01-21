@@ -68,6 +68,7 @@ public class hw2q5smp {
     }
 
     public static void main(String[] args) throws Exception {
+        Comm.init(args);
         if (args.length != 1) {
             System.out.println("Usage: java hw2q5smp <n>");
         }

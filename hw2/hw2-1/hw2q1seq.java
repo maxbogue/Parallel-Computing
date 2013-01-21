@@ -1,9 +1,5 @@
 //******************************************************************************
 //
-// File:    JuliaSetSeq.java
-// Package: edu.rit.smp.fractal
-// Unit:    Class edu.rit.smp.fractal.JuliaSetSeq
-//
 // This Java source file is copyright (C) 2007 by Alan Kaminsky. All rights
 // reserved. For further information, contact the author, Alan Kaminsky, at
 // ark@cs.rit.edu.
@@ -27,8 +23,6 @@ import edu.rit.color.HSB;
 
 import edu.rit.image.PJGColorImage;
 import edu.rit.image.PJGImage;
-
-//import edu.rit.pj.Comm;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -116,7 +110,6 @@ public class hw2q1seq {
      * Julia Set main program.
      */
     public static void main(String[] args) throws Exception {
-        //Comm.init(args);
 
         // Start timing.
         long t1 = System.currentTimeMillis();
@@ -208,7 +201,7 @@ public class hw2q1seq {
      * Print a usage message and exit.
      */
     private static void usage() {
-        System.err.println("Usage: java edu.rit.smp.fractal.JuliaSetSeq <width> <height> <xcenter> <ycenter> <resolution> <maxiter> <gamma> <filename>");
+        System.err.println("Usage: java hw2q1seq <width> <height> <xcenter> <ycenter> <dx> <dy> <resolution> <maxiter> <gamma> <filename>");
         System.err.println("<width> = Image width (pixels)");
         System.err.println("<height> = Image height (pixels)");
         System.err.println("<xcenter> = X coordinate of center point");

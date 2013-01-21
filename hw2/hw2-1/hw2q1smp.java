@@ -1,9 +1,5 @@
 //******************************************************************************
 //
-// File:    JuliaSetSeq.java
-// Package: edu.rit.smp.fractal
-// Unit:    Class edu.rit.smp.fractal.JuliaSetSeq
-//
 // This Java source file is copyright (C) 2007 by Alan Kaminsky. All rights
 // reserved. For further information, contact the author, Alan Kaminsky, at
 // ark@cs.rit.edu.
@@ -87,7 +83,7 @@ import java.io.FileOutputStream;
  * @author  Max Bogue
  * @version 16-Jan-2013
  */
-class hw2q1smp {
+public class hw2q1smp {
 
 // Program shared variables.
 
@@ -223,7 +219,7 @@ class hw2q1smp {
      * Print a usage message and exit.
      */
     private static void usage() {
-        System.err.println("Usage: java edu.rit.smp.fractal.JuliaSetSeq <width> <height> <xcenter> <ycenter> <resolution> <maxiter> <gamma> <filename>");
+        System.err.println("Usage: java hw2q1smp <width> <height> <xcenter> <ycenter> <dx> <dy> <resolution> <maxiter> <gamma> <filename>");
         System.err.println("<width> = Image width (pixels)");
         System.err.println("<height> = Image height (pixels)");
         System.err.println("<xcenter> = X coordinate of center point");

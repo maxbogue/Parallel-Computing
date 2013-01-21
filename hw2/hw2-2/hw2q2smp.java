@@ -32,8 +32,9 @@ public class hw2q2smp {
     }
 
     public static void main(String[] args) throws Exception {
+        Comm.init(args);
         if (args.length != 2) {
-            System.out.println("Usage: java collatz_seq <n> <max_iter>");
+            System.out.println("Usage: java hw2q2smp <n> <max_iter>");
         }
         final long n = Long.parseLong(args[0]);
         final long max_iter = Long.parseLong(args[1]);
