@@ -2,9 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 import edu.rit.pj.Comm;
-import edu.rit.pj.IntegerForLoop;
-import edu.rit.pj.ParallelRegion;
-import edu.rit.pj.ParallelTeam;
+import edu.rit.util.Range;
 
 /**
  * Class for parallel version of homework 1 question 4.
@@ -17,7 +15,7 @@ public class hw3q1clu {
     /**
      * Calculates the factorial of an integer.
      * Does not handle negative numbers because I don't need it to.
-     * 
+     *
      * @param n The number to calculate the factorial of.
      * @return  The factorial of n.
      */
@@ -66,11 +64,15 @@ public class hw3q1clu {
             System.out.println("Usage: java hw3q1clu outFilePrefix");
             System.exit(1);
         }
-        String fileName = args[0];
+        String fileName = args[0] + "_" + rank + ".txt";
         BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
 
         // The number of values to check.
         final int n = 150001;
+
+        Range range = new Range(0, n - 1).subranges(size)[rank];
+        int lb = range.lb();
+        int ub = range.ub();
 
         // The cos results.
         final double[] coss = new double[n];
@@ -78,40 +80,20 @@ public class hw3q1clu {
         // Start timing.
         long t1 = System.currentTimeMillis();
 
-        // Calculate the cos values.
-        new ParallelTeam().execute(new ParallelRegion() {
-            public void run() throws Exception {
-                execute(0, n - 1, new IntegerForLoop() {
-                    public void run(int first, int last) {
-                        for (int i = first; i <= last; i++) {
-                            double x = i / 10.0;
-                            coss[i] = cos(x);
-                        }
-                    }
-                });
-            }
-        });
+        for (int i = lb; i <= ub; i++) {
+            double x = i / 10.0;
+            out.write(x + ":\t" + cos(x) + "\n");
+        }
 
         // Stop timing.
         long t2 = System.currentTimeMillis();
 
         // Print the results.
-        for (int i = 0; i < n; i++) {
-            double x = i / 10.0;
-            System.out.println(x + ":\t" + coss[i]);
-        }
+        //for (int i = 0; i < n; i++) {
+            //double x = i / 10.0;
+            //System.out.println(x + ":\t" + coss[i]);
+        //}
         System.out.println((t2-t1) + " ms");
-    }
-
-    /**
-     * Simple test function to compare the output of cos to the builtin
-     * Math.cos.
-     *
-     * @param x The text value.
-     */
-    private static void testCos(double x) {
-        System.out.println(cos(x));
-        System.out.println(Math.cos(x));
     }
 
 }
