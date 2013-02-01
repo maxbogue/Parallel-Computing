@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 import edu.rit.pj.Comm;
 import edu.rit.pj.IntegerForLoop;
 import edu.rit.pj.ParallelRegion;
@@ -6,7 +9,7 @@ import edu.rit.pj.ParallelTeam;
 /**
  * Class for parallel version of homework 1 question 4.
  */
-public class hw1q4smp {
+public class hw3q1clu {
 
     /** Constant to mod x by for cos. */
     private static final double TAU = 2 * Math.PI;
@@ -53,8 +56,18 @@ public class hw1q4smp {
      *
      * @param args ""
      */
-    public static void main (String [] args) throws Exception {
+    public static void main(String [] args) throws Exception {
         Comm.init(args);
+        Comm world = Comm.world();
+        int size = world.size();
+        int rank = world.rank();
+
+        if (args.length != 1) {
+            System.out.println("Usage: java hw3q1clu outFilePrefix");
+            System.exit(1);
+        }
+        String fileName = args[0];
+        BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
 
         // The number of values to check.
         final int n = 150001;

@@ -1,7 +1,12 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
+import edu.rit.pj.Comm;
+
 /**
  * Class for sequential version of homework 1 question 4.
  */
-public class hw1q4seq {
+public class hw3q1seq {
 
     /** Constant to mod x by for cos. */
     private static final double TAU = 2 * Math.PI;
@@ -49,6 +54,13 @@ public class hw1q4seq {
      * @param args ""
      */
     public static void main (String [] args) throws Exception {
+        Comm.init(args);
+        if (args.length != 1) {
+            System.out.println("Usage: java hw3q1seq outFile");
+            System.exit(1);
+        }
+        String fileName = args[0];
+        BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
 
         // The number of values to check.
         final int n = 150001;
@@ -71,7 +83,7 @@ public class hw1q4seq {
         // Print the results.
         for (int i = 0; i < n; i++) {
             double x = i / 10.0;
-            System.out.println(x + ":\t" + coss[i]);
+            out.write(x + ":\t" + coss[i] + "\n");
         }
         System.out.println((t2-t1) + " ms");
     }
