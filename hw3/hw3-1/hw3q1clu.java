@@ -80,6 +80,7 @@ public class hw3q1clu {
         // Start timing.
         long t1 = System.currentTimeMillis();
 
+        // Calculate things!
         for (int i = lb; i <= ub; i++) {
             double x = i / 10.0;
             out.write(x + ":\t" + cos(x) + "\n");
@@ -87,12 +88,6 @@ public class hw3q1clu {
 
         // Stop timing.
         long t2 = System.currentTimeMillis();
-
-        // Print the results.
-        //for (int i = 0; i < n; i++) {
-            //double x = i / 10.0;
-            //System.out.println(x + ":\t" + coss[i]);
-        //}
         System.out.println((t2-t1) + " ms");
     }
 
