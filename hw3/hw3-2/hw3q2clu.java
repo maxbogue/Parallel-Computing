@@ -5,8 +5,10 @@ import java.io.FileOutputStream;
 
 import edu.rit.image.PJGColorImage;
 import edu.rit.image.PJGImage;
+import edu.rit.mp.IntegerBuf;
 import edu.rit.mp.buf.IntegerMatrixBuf;
 import edu.rit.pj.Comm;
+import edu.rit.util.Arrays;
 import edu.rit.util.Range;
 
 /**
@@ -20,6 +22,7 @@ public class hw3q2clu {
         int size = world.size();
         int rank = world.rank();
 
+        // Process args.
         if (args.length != 4) {
             System.out.println("Usage: java hw3q2clu imageFile dx dy outFile");
             System.exit(1);
@@ -36,15 +39,28 @@ public class hw3q2clu {
         reader.read();
         reader.close();
 
+        // Original data.
         final int w = original.getWidth();
         final int h = original.getHeight();
         final int[][] m = original.getMatrix();
 
-        Range range = new Range(0, h - 1).subranges(size)[rank];
+        // Set up ranges!
+        Range[] ranges = new Range(0, h - 1).subranges(size);
+        Range range = ranges[rank];
         int lb = range.lb();
         int ub = range.ub();
 
-        int[][] n  = new int[ub - lb + 1][w];
+        // And arrays!
+        int[][] n = new int[h][];
+        if (rank == 0) {
+            Arrays.allocate(n, w);
+        } else {
+            Arrays.allocate(n, range, w);
+        }
+
+        // And buffers to hold them!
+        IntegerBuf[] slices = IntegerBuf.rowSliceBuffers(n, ranges);
+        IntegerBuf slice = slices[rank];
 
         // Start timing.
         long t1 = System.currentTimeMillis();
@@ -52,25 +68,17 @@ public class hw3q2clu {
         // Calculate things!
         for (int i = lb; i <= ub; i++) {
             for (int j = 0; j < w; j++) {
-                n[i - lb][j] = m[(i - dx) % w][(j - dy) % h];
+                int x = i - dx;
+                int y = j - dy;
+                n[i - lb][j] = m[(y % h + h) % h][(x % w + w) % w];
             }
         }
 
-        IntegerMatrixBuf[] bufs = null;
+        // Rock that communication.
+        world.gather(0, slice, slices);
+
         if (rank == 0) {
-            bufs = new IntegerMatrixBuf[size];
-        }
-        world.gather(0, IntegerMatrixBuf.buffer(n), bufs);
-        if (rank == 0) {
-            int[][] result = new int[h][w];
-            int r = 0;
-            for (IntegerMatrixBuf buf : bufs) {
-                for (int i = 0; i < buf.length(); i++) {
-                    result[r + i / w][i % w] = buf.get(i);
-                }
-                r += buf.length() / w;
-            }
-            PJGColorImage shifted = new PJGColorImage(h, w, result);
+            PJGColorImage shifted = new PJGColorImage(h, w, n);
             PJGImage.Writer writer = shifted.prepareToWrite(
                     new BufferedOutputStream(new FileOutputStream(outFile)));
             writer.write();
