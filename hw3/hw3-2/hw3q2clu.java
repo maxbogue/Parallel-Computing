@@ -70,7 +70,7 @@ public class hw3q2clu {
             for (int j = 0; j < w; j++) {
                 int x = i - dx;
                 int y = j - dy;
-                n[i - lb][j] = m[(y % h + h) % h][(x % w + w) % w];
+                n[i][j] = m[(y % h + h) % h][(x % w + w) % w];
             }
         }
 
