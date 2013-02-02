@@ -77,6 +77,7 @@ public class hw3q2clu {
         // Rock that communication.
         world.gather(0, slice, slices);
 
+        // Write output.
         if (rank == 0) {
             PJGColorImage shifted = new PJGColorImage(h, w, n);
             PJGImage.Writer writer = shifted.prepareToWrite(
@@ -87,7 +88,9 @@ public class hw3q2clu {
 
         // Stop timing.
         long t2 = System.currentTimeMillis();
-        System.out.println((t2-t1) + " ms");
+        if (rank == 0) {
+            System.out.println((t2-t1) + " ms");
+        }
     }
 
 }
