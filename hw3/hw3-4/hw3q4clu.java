@@ -112,13 +112,15 @@ public class hw3q4clu {
 
         // Write output.
         if (rank == 0) {
+            int[][] C = new int[N][N];
+            world.gather(0, IntegerBuf.buffer(c), IntegerBuf.patchBuffers(C, ranges, ranges));
+            long t2 = System.currentTimeMillis();
+            System.out.println((t2-t1) + " ms");
+            printMatrix(C);
+        } else {
+            world.gather(0, IntegerBuf.buffer(c), null);
         }
 
-        // Stop timing.
-        long t2 = System.currentTimeMillis();
-        if (rank == 0) {
-            System.out.println((t2-t1) + " ms");
-        }
     }
 
     private static void printMatrix(int[][] m) {
