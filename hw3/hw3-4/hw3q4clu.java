@@ -72,9 +72,23 @@ public class hw3q4clu {
         IntegerBuf[] aBufs = IntegerBuf.patchBuffers(a, ranges, ranges);
         IntegerBuf[] bBufs = IntegerBuf.patchBuffers(b, ranges, ranges);
 
+        Comm rowComm = null, colComm = null;
+        for (int i = 0; i < p; i++) {
+            if (i == ri) {
+                rowComm = world.createComm(true);
+            } else {
+                world.createComm(false);
+            }
+            if (i == ci) {
+                colComm = world.createComm(true);
+            } else {
+                world.createComm(false);
+            }
+        }
+
         // Use the row index and col index as tags and gather the data.
-        world.allGather(ri, aBufs[rank], aBufs);
-        world.allGather(ci, bBufs[rank], bBufs);
+        rowComm.allGather(aBufs[rank], aBufs);
+        colComm.allGather(bBufs[rank], bBufs);
 
         if (rank == 0) {
             printMatrix(a);
