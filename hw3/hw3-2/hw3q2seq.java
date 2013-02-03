@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 
 import edu.rit.image.PJGColorImage;
 import edu.rit.image.PJGImage;
+import edu.rit.pj.Comm;
 
 /**
  * Class for seuential version of shifting an image.
@@ -12,6 +13,7 @@ import edu.rit.image.PJGImage;
 public class hw3q2seq {
 
     public static void main(String[] args) throws Exception {
+        Comm.init(args);
 
         // Process args.
         if (args.length != 4) {
