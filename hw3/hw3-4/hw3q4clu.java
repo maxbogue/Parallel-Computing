@@ -1,5 +1,4 @@
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.PrintWriter;
 
 import edu.rit.mp.IntegerBuf;
 import edu.rit.mp.buf.IntegerMatrixBuf;
@@ -21,12 +20,12 @@ public class hw3q4clu {
 
         // Process args.
         if (args.length != 3) {
-            System.out.println("Usage: java hw3q4clu n seed outputFile");
+            System.out.println("Usage: java hw3q4clu n seed outFileName");
             System.exit(1);
         }
         final int N = Integer.parseInt(args[0]);
         long seed = Long.parseLong(args[1]);
-        String outFile = args[2];
+        String outFileName = args[2];
 
         final int p = (int)Math.sqrt(size);
         final int n = N / p;
@@ -66,11 +65,6 @@ public class hw3q4clu {
             random.skip(N - n);
         }
 
-        if (rank == 0) {
-            printMatrix(a);
-            printMatrix(b);
-        }
-
         // And buffers to hold them!
         IntegerBuf[] rowSlices = IntegerBuf.colSliceBuffers(rows, ranges);
         IntegerBuf[] colSlices = IntegerBuf.rowSliceBuffers(cols, ranges);
@@ -93,11 +87,6 @@ public class hw3q4clu {
         rowComm.allGather(IntegerBuf.buffer(a), rowSlices);
         colComm.allGather(IntegerBuf.buffer(b), colSlices);
 
-        if (rank == 0) {
-            printMatrix(a);
-            printMatrix(b);
-        }
-
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 for (int k = 0; k < N; k++) {
@@ -106,31 +95,29 @@ public class hw3q4clu {
             }
         }
 
-        if (rank == 0) {
-            printMatrix(c);
-        }
-
         // Write output.
         if (rank == 0) {
             int[][] C = new int[N][N];
             world.gather(0, IntegerBuf.buffer(c), IntegerBuf.patchBuffers(C, ranges, ranges));
             long t2 = System.currentTimeMillis();
             System.out.println((t2-t1) + " ms");
-            printMatrix(C);
+            PrintWriter out = new PrintWriter(outFileName);
+            printMatrix(C, out);
+            out.close();
         } else {
             world.gather(0, IntegerBuf.buffer(c), null);
         }
 
     }
 
-    private static void printMatrix(int[][] m) {
-        System.out.println();
+    private static void printMatrix(int[][] m, PrintWriter out) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[i].length; j++) {
-                System.out.print(m[i][j] + " ");
+                out.write(m[i][j] + " ");
             }
-            System.out.println();
+            out.write("\n");
         }
+        out.flush();
     }
 
 }
