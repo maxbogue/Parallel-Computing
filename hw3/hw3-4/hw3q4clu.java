@@ -20,7 +20,7 @@ public class hw3q4clu {
         int rank = world.rank();
 
         // Process args.
-        if (args.length != 4) {
+        if (args.length != 3) {
             System.out.println("Usage: java hw3q4clu n seed outputFile");
             System.exit(1);
         }
@@ -76,7 +76,7 @@ public class hw3q4clu {
         for (int i = ri * n; i < ri * n + n; i++) {
             for (int j = ci * n; j < ci * n + n; j++) {
                 for (int k = 0; k < N; k++) {
-                    c[i][j] = a[i][k] * b[k][j];
+                    c[i][j] += a[i][k] * b[k][j];
                 }
             }
         }
@@ -94,6 +94,7 @@ public class hw3q4clu {
     }
 
     private static void printMatrix(int[][] m) {
+        System.out.println();
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[i].length; j++) {
                 System.out.print(m[i][j] + " ");
