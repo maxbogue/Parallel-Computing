@@ -1,14 +1,10 @@
-import edu.rit.mp.IntegerBuf;
-import edu.rit.mp.buf.IntegerItemBuf;
 import edu.rit.pj.Comm;
-import edu.rit.util.Arrays;
 import edu.rit.util.Random;
-import edu.rit.util.Range;
 
 /**
- * Class for cluster version of merge sort.
+ * Class for sequential version of merge sort.
  */
-public class hw3q3clu {
+public class hw3q3seq {
 
     public static int[] merge(int[] a, int[] b) {
         int n = a.length;
@@ -51,9 +47,6 @@ public class hw3q3clu {
 
     public static void main(String[] args) throws Exception {
         Comm.init(args);
-        Comm world = Comm.world();
-        int size = world.size();
-        int rank = world.rank();
 
         // Process args.
         if (args.length != 2) {
@@ -63,52 +56,26 @@ public class hw3q3clu {
         final int N = Integer.parseInt(args[0]);
         long seed = Long.parseLong(args[1]);
 
-        // Set up ranges!
-        Range[] ranges = new Range(0, N - 1).subranges(size);
-        Range range = ranges[rank];
-
-        // And arrays!
-        int[] nums = new int[range.length()];
+        // Array of nums!
+        int[] nums = new int[N];
 
         // Start timing.
         long t1 = System.currentTimeMillis();
 
         // Generate my random numbers.
         Random random = Random.getInstance(seed);
-        random.skip(range.lb());
         for (int i = 0; i < nums.length; i++) {
             nums[i] = random.nextInteger();
         }
-        System.out.print(rank + ": ");
 
-        // Initial sorting of my numbers.
+        // Sorting of the numbers.
         nums = mergeSort(nums);
-        System.out.print(rank + ": ");
-
-        // Calculate things!
-        IntegerItemBuf m = IntegerBuf.buffer();
-        int step;
-        for (step = 1; rank % (step * 2) == 0; step *= 2) {
-            if (rank + step < size) {
-                world.receive(rank + step, m);
-                int[] nextNums = new int[m.item];
-                world.receive(rank + step, IntegerBuf.buffer(nextNums));
-                nums = merge(nums, nextNums);
-            } else if (rank == 0) {
-                break;
-            }
-        }
-        if (rank - step >= 0) {
-            world.send(rank - step, new IntegerItemBuf(nums.length));
-            world.send(rank - step, IntegerBuf.buffer(nums));
-        }
 
         // Stop timing.
         long t2 = System.currentTimeMillis();
-        if (rank == 0) {
-            printArray(nums);
-            System.out.println((t2-t1) + " ms");
-        }
+
+        printArray(nums);
+        System.out.println((t2-t1) + " ms");
     }
 
     private static void printArray(int[] a) {
