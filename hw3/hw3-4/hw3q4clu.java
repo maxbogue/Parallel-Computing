@@ -63,8 +63,11 @@ public class hw3q4clu {
             // Skip to the next row of this patch.
             random.skip(N - n);
         }
-        printMatrix(a);
-        printMatrix(b);
+
+        if (rank == 0) {
+            printMatrix(a);
+            printMatrix(b);
+        }
 
         IntegerBuf[] aBufs = IntegerBuf.patchBuffers(a, ranges, ranges);
         IntegerBuf[] bBufs = IntegerBuf.patchBuffers(b, ranges, ranges);
@@ -73,6 +76,11 @@ public class hw3q4clu {
         world.allGather(ri, aBufs[rank], aBufs);
         world.allGather(ci, bBufs[rank], bBufs);
 
+        if (rank == 0) {
+            printMatrix(a);
+            printMatrix(b);
+        }
+
         for (int i = ri * n; i < ri * n + n; i++) {
             for (int j = ci * n; j < ci * n + n; j++) {
                 for (int k = 0; k < N; k++) {
@@ -80,7 +88,10 @@ public class hw3q4clu {
                 }
             }
         }
-        printMatrix(c);
+
+        if (rank == 0) {
+            printMatrix(c);
+        }
 
         // Write output.
         if (rank == 0) {
