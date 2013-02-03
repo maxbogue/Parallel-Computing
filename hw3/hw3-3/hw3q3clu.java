@@ -80,26 +80,27 @@ public class hw3q3clu {
             nums[i] = random.nextInteger();
         }
         System.out.print(rank + ": ");
-        printArray(nums);
 
         // Initial sorting of my numbers.
         nums = mergeSort(nums);
         System.out.print(rank + ": ");
-        printArray(nums);
 
         // Calculate things!
         IntegerItemBuf m = IntegerBuf.buffer();
-        for (int i = 1; rank + i < size; i *= 2) {
-            if (rank % (i * 2) == 0) {
-                world.receive(rank + i, m);
+        int step;
+        for (step = 1; rank % (step * 2) == 0; step *= 2) {
+            if (rank + step < size) {
+                world.receive(rank + step, m);
                 int[] nextNums = new int[m.item];
-                world.receive(rank + i, IntegerBuf.buffer(nextNums));
+                world.receive(rank + step, IntegerBuf.buffer(nextNums));
                 nums = merge(nums, nextNums);
-            } else {
-                world.send(rank - i, new IntegerItemBuf(nums.length));
-                world.send(rank - i, IntegerBuf.buffer(nums));
+            } else if (rank == 0) {
                 break;
             }
+        }
+        if (rank - step >= 0) {
+            world.send(rank - step, new IntegerItemBuf(nums.length));
+            world.send(rank - step, IntegerBuf.buffer(nums));
         }
 
         // Stop timing.
