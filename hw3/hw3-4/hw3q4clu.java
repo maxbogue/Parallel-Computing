@@ -108,6 +108,11 @@ public class hw3q4clu {
 
     }
 
+    private static void printMatrix(int[][] m) {
+        System.out.println();
+        printMatrix(m, System.out);
+    }
+
     private static void printMatrix(int[][] m, PrintStream out) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[i].length; j++) {
