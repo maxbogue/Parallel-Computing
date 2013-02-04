@@ -1,9 +1,7 @@
-import java.io.PrintWriter;
+import java.io.PrintStream;
 
 import edu.rit.mp.IntegerBuf;
-import edu.rit.mp.buf.IntegerMatrixBuf;
 import edu.rit.pj.Comm;
-import edu.rit.util.Arrays;
 import edu.rit.util.Random;
 import edu.rit.util.Range;
 
@@ -101,7 +99,7 @@ public class hw3q4clu {
             world.gather(0, IntegerBuf.buffer(c), IntegerBuf.patchBuffers(C, ranges, ranges));
             long t2 = System.currentTimeMillis();
             System.out.println((t2-t1) + " ms");
-            PrintWriter out = new PrintWriter(outFileName);
+            PrintStream out = new PrintStream(outFileName);
             printMatrix(C, out);
             out.close();
         } else {
@@ -110,12 +108,12 @@ public class hw3q4clu {
 
     }
 
-    private static void printMatrix(int[][] m, PrintWriter out) {
+    private static void printMatrix(int[][] m, PrintStream out) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[i].length; j++) {
-                out.write(m[i][j] + " ");
+                out.print(m[i][j] + " ");
             }
-            out.write("\n");
+            out.println();
         }
         out.flush();
     }

@@ -1,4 +1,4 @@
-import java.io.PrintWriter;
+import java.io.PrintStream;
 
 import edu.rit.pj.Comm;
 import edu.rit.util.Random;
@@ -61,18 +61,18 @@ public class hw3q4seq {
         System.out.println((t2-t1) + " ms");
 
         // Write output.
-        PrintWriter out = new PrintWriter(outFileName);
+        PrintStream out = new PrintStream(outFileName);
         printMatrix(C, out);
         out.close();
 
     }
 
-    private static void printMatrix(int[][] m, PrintWriter out) {
+    private static void printMatrix(int[][] m, PrintStream out) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[i].length; j++) {
-                out.write(m[i][j] + " ");
+                out.print(m[i][j] + " ");
             }
-            out.write("\n");
+            out.println();
         }
         out.flush();
     }
