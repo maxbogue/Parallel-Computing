@@ -42,7 +42,7 @@ public class hw3q4clu {
         // Generate numbers.
         Random random = Random.getInstance(seed);
         // Jump to the start of this patch of A and generate nums.
-        random.skip(n * n * (ri * p + ci));
+        random.skip(n * n * ri * p + n * ci);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 a[i][j] = random.nextInt(100);
@@ -54,7 +54,7 @@ public class hw3q4clu {
         random.setSeed(seed);
         random.skip(N * N);
         // Jump to the start of this patch of B and generate nums.
-        random.skip(n * n * (ri * p + ci));
+        random.skip(n * n * ri * p + n * ci);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 b[i][j] = random.nextInt(100);
