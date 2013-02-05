@@ -1,0 +1,68 @@
+Parallel Computing I
+Homework 3
+
+Name: Max Bogue
+
+Q1.
+
+Sequential program:
+% java hw3q1seq output.txt
+
+Parallel program:
+% java -Dpj.np=K hw3q1clu output
+
+K       T       speedup     eff     edsf
+seq     1906
+1       6868    0.277519    0.278
+2       4393    0.433872    0.217   0.279266
+4       3189    0.597680    0.149   0.285770
+8       2909    0.655208    0.082   0.341210
+
+Q2.
+
+Seqential program:
+% java hw3q2seq julia.pjg 600 200 julia_shift_seq.pjg
+
+Parallel program:
+% java -Dpj.np=K hw3q2clu julia.pjg 600 200 julia_shift_seq.pjg
+
+K       T       speedup     eff     edsf
+seq     2527
+1       2546    0.992537    0.993
+2       2256    1.120124    0.560   0.772192
+4       2232    1.132168    0.283   0.835559
+8       4180    0.604545    0.076   1.733475
+
+Q3.
+
+Sequential program:
+% java hw3q3seq 2000000 7 > /dev/null
+
+Parallel program:
+% java -Dpj.np=K hw3q3clu 2000000 7 > /dev/null
+
+K       T       speedup     eff     edsf
+seq     7834
+1       7867    0.995805    0.996
+2       4914    1.594221    0.797   0.249269
+4       4094    1.913532    0.478   0.360536
+8       3118    2.512508    0.314   0.310102
+
+Q4.
+
+Sequential program:
+% java hw3q4seq 996 7 out-seq.txt
+
+Parallel program:
+% java -Dpj.nt=K hw3q4clu 996 7 out-clu.txt
+
+K       T       speedup     eff     edsf
+seq     100815
+1       104990  0.960234    0.960
+4       27073   3.723821    0.931   0.010484
+9       16149   6.242801    0.694   0.048041
+16      9026    11.169400   0.698   0.025035
+
+Q5.
+
+The idea of the DNS matrix multiplication algorithm is quite simple: There are N^3 multiplications that happen when computing the product of two NxN matrices, so have N^3 processors available to do each of these multiplications.
