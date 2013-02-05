@@ -1,7 +1,6 @@
 import edu.rit.mp.IntegerBuf;
 import edu.rit.mp.buf.IntegerItemBuf;
 import edu.rit.pj.Comm;
-import edu.rit.util.Arrays;
 import edu.rit.util.Random;
 import edu.rit.util.Range;
 
@@ -79,11 +78,9 @@ public class hw3q3clu {
         for (int i = 0; i < nums.length; i++) {
             nums[i] = random.nextInteger();
         }
-        System.out.print(rank + ": ");
 
         // Initial sorting of my numbers.
         nums = mergeSort(nums);
-        System.out.print(rank + ": ");
 
         // Calculate things!
         IntegerItemBuf m = IntegerBuf.buffer();
@@ -107,7 +104,7 @@ public class hw3q3clu {
         long t2 = System.currentTimeMillis();
         if (rank == 0) {
             printArray(nums);
-            System.out.println((t2-t1) + " ms");
+            System.err.println((t2-t1) + " ms");
         }
     }
 
