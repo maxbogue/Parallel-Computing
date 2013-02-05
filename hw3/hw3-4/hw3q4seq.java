@@ -38,12 +38,12 @@ public class hw3q4seq {
         Random random = Random.getInstance(seed);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                A[i][j] = random.nextInt(100);
+                A[i][j] = random.nextInt(200) - 100;
             }
         }
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                B[i][j] = random.nextInt(100);
+                B[i][j] = random.nextInt(200) - 100;
             }
         }
 
