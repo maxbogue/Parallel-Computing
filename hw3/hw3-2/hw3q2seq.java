@@ -37,7 +37,7 @@ public class hw3q2seq {
         final int h = original.getHeight();
         final int[][] m = original.getMatrix();
 
-        // And arrays!
+        // Matrix of the shifted image.
         int[][] n = new int[h][w];
 
         // Start timing.

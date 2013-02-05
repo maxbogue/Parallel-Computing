@@ -4,7 +4,7 @@ import edu.rit.pj.Comm;
 import edu.rit.util.Random;
 
 /**
- * Class for cluster version of shifting an image.
+ * Class for sequential version of matrix multiplication.
  */
 public class hw3q4seq {
 

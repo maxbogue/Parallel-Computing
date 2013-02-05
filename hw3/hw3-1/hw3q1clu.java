@@ -5,7 +5,7 @@ import edu.rit.pj.Comm;
 import edu.rit.util.Range;
 
 /**
- * Class for parallel version of homework 1 question 4.
+ * Class for cluster version of cosine calculation.
  */
 public class hw3q1clu {
 

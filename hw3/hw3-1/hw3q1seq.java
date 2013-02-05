@@ -4,7 +4,7 @@ import java.io.FileWriter;
 import edu.rit.pj.Comm;
 
 /**
- * Class for sequential version of homework 1 question 4.
+ * Class for sequential version of cosine calculation.
  */
 public class hw3q1seq {
 

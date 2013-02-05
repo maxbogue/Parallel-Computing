@@ -50,7 +50,7 @@ public class hw3q2clu {
         int lb = range.lb();
         int ub = range.ub();
 
-        // And arrays!
+        // Matrix of the shifted image.
         int[][] n = new int[h][];
         if (rank == 0) {
             Arrays.allocate(n, w);
