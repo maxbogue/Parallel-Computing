@@ -76,7 +76,7 @@ public class hw3q3clu {
         Random random = Random.getInstance(seed);
         random.skip(range.lb());
         for (int i = 0; i < nums.length; i++) {
-            nums[i] = random.nextInteger();
+            nums[i] = random.nextInt(2000000) - 1000000;
         }
 
         // Initial sorting of my numbers.

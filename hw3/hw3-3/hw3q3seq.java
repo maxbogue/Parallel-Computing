@@ -65,7 +65,7 @@ public class hw3q3seq {
         // Generate my random numbers.
         Random random = Random.getInstance(seed);
         for (int i = 0; i < nums.length; i++) {
-            nums[i] = random.nextInteger();
+            nums[i] = random.nextInt(2000000) - 1000000;
         }
 
         // Sorting of the numbers.
@@ -75,7 +75,7 @@ public class hw3q3seq {
         long t2 = System.currentTimeMillis();
 
         printArray(nums);
-        System.out.println((t2-t1) + " ms");
+        System.err.println((t2-t1) + " ms");
     }
 
     private static void printArray(int[] a) {
