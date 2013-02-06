@@ -155,7 +155,6 @@ public class hw3q5clu {
     }
 
     private static void printMatrix(int[][] m) {
-        System.out.println();
         printMatrix(m, System.out);
     }
 
