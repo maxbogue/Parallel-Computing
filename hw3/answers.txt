@@ -65,6 +65,10 @@ seq     100815
 
 Q5.
 
+Note: I did an implementation of this algorithm (hw3-5/hw3q5clu.java), but
+because paranoia was down the evening of 2/5 I didn't get to test it at all,
+so there are almost certainly bugs.
+
 The idea of the DNS matrix multiplication algorithm is quite simple: There are
 N^3 multiplications that happen when computing the product of two NxN matrices,
 so have N^3 processors available to do each of these multiplications. The
