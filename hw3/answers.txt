@@ -65,4 +65,104 @@ seq     100815
 
 Q5.
 
-The idea of the DNS matrix multiplication algorithm is quite simple: There are N^3 multiplications that happen when computing the product of two NxN matrices, so have N^3 processors available to do each of these multiplications.
+The idea of the DNS matrix multiplication algorithm is quite simple: There are
+N^3 multiplications that happen when computing the product of two NxN matrices,
+so have N^3 processors available to do each of these multiplications. The
+results are then reduced via a summation into the final answer for each cell.
+
+The process for doing this requires a significant amount of communication.
+Imagine the N^3 processors are arrayed in a cube, with the i and j axis
+representing the rows and columns of the matrix, and the k axis representing
+each product in the summation for that cell. Once each processor in the
+k = 0 plane has its value, the following steps are performed:
+
+1. For each processor P(i, j, 0), its element A(i, j) is sent to P(i, j, j) and B(i, j) is sent to P(i, j, i).
+2. Each P(i, j, k) that has A(i, j) broadcasts it to P(i, *, k).
+3. Each P(i, j, k) that has B(i, j) broadcasts it to P(*, j, k).
+4. Each P(i, j, k) computes C(i, j) = A(i, k) * B(k, j).
+5. Each P(i, j, 0) receives a reduction using a summation from all P(i, j, *).
+6. P(i, j, 0) now holds the final value of C(i, j); gather then all to P(0, 0, 0).
+
+To adapt the algorithm for practical uses, simply replace each element in the previous description with a patch of the full matrix.
+
+Example Execution:
+
+A = [ 49 -91
+      24  72]
+
+B = [-56 -63
+      21 -39]
+
+K = 8 processors
+
+Notation:
+
+k=k
+[a00 a01] [b00 b01]
+[a10 a11] [b10 b11]
+
+where the aij and bij's correspond to the P(i, j, k)'th processor's data.
+
+Step 0:
+
+k=0
+[ 49, -91] [-56, -63]
+[ 24,  72] [ 21, -39]
+
+k=1
+[  _,   _] [  _,   _]
+[  _,   _] [  _,   _]
+
+Step 1:
+
+k=0
+[ 49,   _] [-56, -63]
+[ 24,   _] [  _,   _]
+
+k=1
+[  _, -91] [  _,   _]
+[  _,  72] [ 21, -39]
+
+Step 2:
+
+k=0
+[ 49,  49] [-56, -63]
+[ 24,  24] [  _,   _]
+
+k=1
+[-91, -91] [  _,   _]
+[ 72,  72] [ 21, -39]
+
+Step 3:
+
+k=0
+[ 49,  49] [-56, -63]
+[ 24,  24] [-56, -63]
+
+k=1
+[-91, -91] [ 21, -39]
+[ 72,  72] [ 21, -39]
+
+Step 4; now showing C matrix values:
+
+k=0
+[ 49 * -56, 49 * -63] = [-2744, -3087]
+[ 24 * -56, 24 * -63]   [-1344, -1512]
+
+k=1
+[-91 * 21, -91 * -39] = [-1911,  3549]
+[ 72 * 21,  72 * -39] = [ 1512, -2808]
+
+Step 5:
+
+k=0
+[-2744 + -1911, -3087 +  3549] = [-4655,   462]
+[-1344 +  1512, -1512 + -2808]   [  168, -4320]
+
+k=1
+[_, _]
+[_, _]
+
+Step 6:
+
+Everything is gathered to P(0, 0, 0) and we are done.
