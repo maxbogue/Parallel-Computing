@@ -61,7 +61,7 @@ public class hw3q5clu {
             random.skip(n * n * ri * p + n * ci);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    a[i][j] = random.nextInt(100);
+                    a[i][j] = random.nextInt(200) - 100;
                 }
                 // Skip to the next row of this patch.
                 random.skip(N - n);
@@ -73,7 +73,7 @@ public class hw3q5clu {
             random.skip(n * n * ri * p + n * ci);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    b[i][j] = random.nextInt(100);
+                    b[i][j] = random.nextInt(200) - 100;
                 }
                 // Skip to the next row of this patch.
                 random.skip(N - n);
