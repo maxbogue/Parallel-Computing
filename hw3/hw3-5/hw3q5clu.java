@@ -54,6 +54,7 @@ public class hw3q5clu {
         // Start timing.
         long t1 = System.currentTimeMillis();
 
+        // Only the first plane of k generates numbers initially.
         if (ki == 0) {
             // Generate numbers.
             Random random = Random.getInstance(seed);
@@ -80,7 +81,12 @@ public class hw3q5clu {
             }
         }
 
-        Comm rowComm = null, colComm = null, kComm = null;
+        // Comm for nodes in the same row and k planes.
+        Comm rowComm = null;
+        // Comm for nodes in the same column and k planes.
+        Comm colComm = null;
+        // Comm for nodes in the same row and column but different k planes.
+        Comm kComm = null;
         for (int i = 0; i < p; i++) {
             for (int j = 0; j < p; j++) {
                 if (i == ri && j == ki) {
@@ -100,6 +106,7 @@ public class hw3q5clu {
                 }
             }
         }
+        // Comm for the first k plane, to gather the reduction results.
         Comm gatherComm = world.createComm(ki == 0);
 
         IntegerBuf aBuf = IntegerBuf.buffer(a);
@@ -120,9 +127,12 @@ public class hw3q5clu {
             world.receive(ri * p + ci, bBuf);
         }
 
+        // Replicate the columns of A along the row.
         rowComm.broadcast(ki, aBuf);
+        // Replicate the rows of B along the column.
         colComm.broadcast(ki, bBuf);
 
+        // Perform the actual matrix computation on our data.
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 for (int k = 0; k < n; k++) {
@@ -131,6 +141,7 @@ public class hw3q5clu {
             }
         }
 
+        // Perform the reduction down to the k=0 plane.
         kComm.reduce(0, cBuf, IntegerOp.SUM);
 
         // Write output.
