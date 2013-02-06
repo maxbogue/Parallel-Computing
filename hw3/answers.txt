@@ -65,9 +65,15 @@ seq     100815
 
 Q5.
 
-Note: I did an implementation of this algorithm (hw3-5/hw3q5clu.java), but
-because paranoia was down the evening of 2/5 I didn't get to test it at all,
-so there are almost certainly bugs.
+Sequential program: see Q4.
+Parallel program:
+% java -Dpj.np=K hw3q5clu 996 7 out-clu.txt
+
+K       T       speedup     eff     edsf
+seq     100815
+1       114026  0.884140    0.884
+8       19031   5.297409    0.662   0.047886
+27      12722   7.924462    0.293   0.077401
 
 The idea of the DNS matrix multiplication algorithm is quite simple: There are
 N^3 multiplications that happen when computing the product of two NxN matrices,
@@ -89,7 +95,7 @@ k = 0 plane has its value, the following steps are performed:
 
 To adapt the algorithm for practical uses, simply replace each element in the previous description with a patch of the full matrix.
 
-Example Execution:
+Example Execution (N=2, seed=7):
 
 A = [ 49 -91
       24  72]
