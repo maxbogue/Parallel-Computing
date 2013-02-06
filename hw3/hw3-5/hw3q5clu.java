@@ -106,22 +106,22 @@ public class hw3q5clu {
         IntegerBuf bBuf = IntegerBuf.buffer(b);
         IntegerBuf cBuf = IntegerBuf.buffer(c);
 
-        // Share rows of A to nodes with ki == ri.
-        if (ki == 0 && ri > 0) {
-            world.send(ki * p * p + ki * p + ci, aBuf);
-        } else if (ki > 0 && ki == ri) {
+        // Share cols of A to nodes with ki == ci.
+        if (ki == 0 && ci > 0) {
+            world.send(ci * p * p + ri * p + ci, aBuf);
+        } else if (ki > 0 && ki == ci) {
             world.receive(ri * p + ci, aBuf);
         }
 
-        // Share cols of B to nodes with ki == ci.
-        if (ki == 0 && ci > 0) {
-            world.send(ki * p * p + ri * p + ki, bBuf);
-        } else if (ki > 0 && ki == ci) {
+        // Share rows of B to nodes with ki == ri.
+        if (ki == 0 && ri > 0) {
+            world.send(ri * p * p + ri * p + ci, bBuf);
+        } else if (ki > 0 && ki == ri) {
             world.receive(ri * p + ci, bBuf);
         }
 
-        colComm.broadcast(ki, aBuf);
-        rowComm.broadcast(ki, bBuf);
+        rowComm.broadcast(ki, aBuf);
+        colComm.broadcast(ki, bBuf);
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
