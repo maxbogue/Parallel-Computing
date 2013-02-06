@@ -41,7 +41,7 @@ public class hw3q5clu {
         // The dimensions of each patch are n x n.
         final int n = N / p;
         // The row index and col index of this patch.
-        final int ri = rank / p;
+        final int ri = rank / p % p;
         final int ci = rank % p;
         // The k-index of this processor.
         final int ki = rank / (p * p);
