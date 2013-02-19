@@ -43,7 +43,9 @@ public class hw4q1clu {
             }
         }
 
+        // The graph's adjacency matrix.
         int[][] adjacency = new int[n][n];
+        // A list of the edges (u,v pairs).
         int[][] edges = new int[m][2];
 
         // Generate the graph on each processor.
@@ -72,7 +74,7 @@ public class hw4q1clu {
         int[] predecessor = new int[n];
         for (int i = 0; i < n; i++) {
             distance[i] = i == source ? 0 : Integer.MAX_VALUE;
-            distanceCopy[i] = i == source ? 0 : Integer.MAX_VALUE;
+            distanceCopy[i] = distance[i];
             predecessor[i] = Integer.MAX_VALUE;
         }
 
@@ -83,38 +85,44 @@ public class hw4q1clu {
         // Start timing.
         long t1 = System.currentTimeMillis();
 
+        // Create buffers for sharing data.
         IntegerBuf distanceBuf = IntegerBuf.buffer(distance);
         IntegerBuf predecessorBuf = IntegerBuf.buffer(predecessor);
 
-        List<Integer> updated = new LinkedList<Integer>();
+        // Loop n-1 times.
         for (int i = 0; i < n - 1; i++) {
-            updated.clear();
+            // For the edges in our range.
             for (int e = range.lb(); e <= range.ub(); e++) {
                 int u = edges[e][0];
                 int v = edges[e][1];
                 int w = adjacency[u][v];
                 // Don't have to check for invalid edge; just invalid distance.
                 if (distance[u] != Integer.MAX_VALUE) {
+                    // We want the lowest number valid predecessor,
+                    // for consistency with different #'s of processors.
                     if (distance[u] + w < distance[v] ||
                        (distance[u] + w == distance[v] && predecessor[v] > u))
                     {
                         distance[v] = distance[u] + w;
                         distanceCopy[v] = distance[u] + w;
                         predecessor[v] = u;
-                        updated.add(v);
                     }
                 }
             }
+            // Get the new best distances to each node.
             world.allReduce(distanceBuf, IntegerOp.MINIMUM);
+            // Invalidate the predecessors for any updated distances.
             for (int u = 0; u < n; u++) {
                 if (distance[u] != distanceCopy[u]) {
                     predecessor[u] = Integer.MAX_VALUE;
                     distanceCopy[u] = distance[u];
                 }
             }
+            // Collect the new predecessors.
             world.allReduce(predecessorBuf, IntegerOp.MINIMUM);
         }
 
+        // Stop timing.
         long t2 = System.currentTimeMillis();
 
         // Write output.
