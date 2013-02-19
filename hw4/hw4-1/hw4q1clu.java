@@ -1,3 +1,7 @@
+import java.io.PrintStream;
+import java.util.List;
+import java.util.LinkedList;
+
 import edu.rit.mp.IntegerBuf;
 import edu.rit.pj.Comm;
 import edu.rit.pj.reduction.IntegerOp;
@@ -62,13 +66,17 @@ public class hw4q1clu {
             }
         }
 
+        if (rank == 0) {
+            printMatrix(adjacency);
+        }
+
         // Initialize distances.
         int[] distance = new int[n];
-        int[] distance_ = new int[n];
+        int[] distanceCopy = new int[n];
         int[] predecessor = new int[n];
         for (int i = 0; i < n; i++) {
             distance[i] = i == source ? 0 : Integer.MAX_VALUE;
-            distance_[i] = i == source ? 0 : Integer.MAX_VALUE;
+            distanceCopy[i] = i == source ? 0 : Integer.MAX_VALUE;
             predecessor[i] = Integer.MAX_VALUE;
         }
 
@@ -82,20 +90,23 @@ public class hw4q1clu {
         IntegerBuf distanceBuf = IntegerBuf.buffer(distance);
         IntegerBuf predecessorBuf = IntegerBuf.buffer(predecessor);
 
+        List<Integer> updated = new LinkedList<Integer>();
         for (int i = 0; i < n - 1; i++) {
+            updated.clear();
             for (int e = range.lb(); e <= range.ub(); e++) {
                 int u = edges[e][0];
                 int v = edges[e][1];
                 int w = adjacency[u][v];
                 if (distance[u] + w < distance[v]) {
                     distance[v] = distance[u] + w;
-                    distance_[v] = distance[u] + w;
+                    distanceCopy[v] = distance[u] + w;
                     predecessor[v] = u;
+                    updated.add(v);
                 }
             }
             world.allReduce(distanceBuf, IntegerOp.MINIMUM);
-            for (int u = 0; u < n; u++) {
-                if (distance[u] != distance_[u]) {
+            for (int u : updated) {
+                if (distance[u] != distanceCopy[u]) {
                     predecessor[u] = Integer.MAX_VALUE;
                 }
             }
@@ -115,5 +126,20 @@ public class hw4q1clu {
         }
 
     }
+
+    private static void printMatrix(int[][] m) {
+        printMatrix(m, System.out);
+    }
+
+    private static void printMatrix(int[][] m, PrintStream out) {
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[i].length; j++) {
+                out.print(m[i][j] + " ");
+            }
+            out.println();
+        }
+        out.flush();
+    }
+
 
 }
