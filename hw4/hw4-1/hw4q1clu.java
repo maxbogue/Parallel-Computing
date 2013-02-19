@@ -66,10 +66,6 @@ public class hw4q1clu {
             }
         }
 
-        if (rank == 0) {
-            printMatrix(adjacency);
-        }
-
         // Initialize distances.
         int[] distance = new int[n];
         int[] distanceCopy = new int[n];
@@ -78,6 +74,14 @@ public class hw4q1clu {
             distance[i] = i == source ? 0 : Integer.MAX_VALUE;
             distanceCopy[i] = i == source ? 0 : Integer.MAX_VALUE;
             predecessor[i] = Integer.MAX_VALUE;
+        }
+
+        if (rank == 0) {
+            printMatrix(adjacency);
+            for (int i : predecessor) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
         }
 
         // Ranges for which edges each processor handles.
@@ -97,7 +101,8 @@ public class hw4q1clu {
                 int u = edges[e][0];
                 int v = edges[e][1];
                 int w = adjacency[u][v];
-                if (w >= 0 && distance[u] + w < distance[v]) {
+                // Don't have to check for invalid edge.
+                if (distance[u] + w < distance[v]) {
                     distance[v] = distance[u] + w;
                     distanceCopy[v] = distance[u] + w;
                     predecessor[v] = u;
@@ -108,6 +113,7 @@ public class hw4q1clu {
             for (int u : updated) {
                 if (distance[u] != distanceCopy[u]) {
                     predecessor[u] = Integer.MAX_VALUE;
+                    distanceCopy[u] = distance[u];
                 }
             }
             world.allReduce(predecessorBuf, IntegerOp.MINIMUM);
