@@ -37,7 +37,7 @@ public class hw4q1clu {
         random = Random.getInstance(seed);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (i != j && random.nextInt(maxDistance + 2) == 0) {
+                if (i != j && random.nextInt(maxDistance + 2) > 0) {
                     m++;
                 }
             }
