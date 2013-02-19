@@ -119,12 +119,19 @@ public class hw4q1clu {
 
         // Write output.
         if (rank == 0) {
-            // Print time results.
-            System.err.println((t2-t1) + " ms");
+            // Print shortest path results.
             System.out.println("Shortest distances:");
             for (int i = 0; i < n; i++) {
-                System.out.printf("%d: %d (from %d)\n", i, distance[i], predecessor[i]);
+                if (distance[i] == Integer.MAX_VALUE) {
+                    System.out.printf("%d: inf\n", i);
+                } else if (predecessor[i] == Integer.MAX_VALUE) {
+                    System.out.printf("%d: %d (source)\n", i, distance[i]);
+                } else {
+                    System.out.printf("%d: %d (from %d)\n", i, distance[i], predecessor[i]);
+                }
             }
+            // Print time results.
+            System.err.println((t2-t1) + " ms");
         }
 
     }
