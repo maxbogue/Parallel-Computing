@@ -1,6 +1,4 @@
 import java.io.PrintStream;
-import java.util.List;
-import java.util.LinkedList;
 
 import edu.rit.mp.IntegerBuf;
 import edu.rit.pj.Comm;
@@ -157,6 +155,5 @@ public class hw4q1clu {
         }
         out.flush();
     }
-
 
 }
