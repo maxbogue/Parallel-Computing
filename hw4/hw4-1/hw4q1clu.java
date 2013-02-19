@@ -97,7 +97,7 @@ public class hw4q1clu {
                 int u = edges[e][0];
                 int v = edges[e][1];
                 int w = adjacency[u][v];
-                if (distance[u] + w < distance[v]) {
+                if (w >= 0 && distance[u] + w < distance[v]) {
                     distance[v] = distance[u] + w;
                     distanceCopy[v] = distance[u] + w;
                     predecessor[v] = u;
