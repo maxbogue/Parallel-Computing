@@ -14,7 +14,7 @@ public class hw4q1seq {
 
         // Process args.
         if (args.length != 4) {
-            System.out.println("Usage: java hw3q4clu <num_nodes> <seed> <max_distance> <source>");
+            System.out.println("Usage: java hw4q1seq <num_nodes> <seed> <max_distance> <source>");
             System.exit(1);
         }
         int n = Integer.parseInt(args[0]);
@@ -110,20 +110,6 @@ public class hw4q1seq {
         // Print time results.
         System.err.println((t2-t1) + " ms");
 
-    }
-
-    private static void printMatrix(int[][] m) {
-        printMatrix(m, System.out);
-    }
-
-    private static void printMatrix(int[][] m, PrintStream out) {
-        for (int i = 0; i < m.length; i++) {
-            for (int j = 0; j < m[i].length; j++) {
-                out.print(m[i][j] + " ");
-            }
-            out.println();
-        }
-        out.flush();
     }
 
 }
