@@ -1,0 +1,44 @@
+Parallel Computing I
+Homework 4
+
+Name: Max Bogue
+
+Q1.
+
+Sequential program:
+% java hw3q1seq output.txt
+
+Parallel program:
+% java -Dpj.np=K hw4q1clu 1000 7 100 0 > /dev/null
+
+K       T       speedup     eff     edsf
+seq     157733
+1       195012  0.808837    0.809
+2       104751  1.505790    0.753   0.074303
+3       76256   2.068467    0.689   0.086549
+4       61708   2.556119    0.639   0.088576
+5       55915   2.820943    0.564   0.108407
+6       51177   3.082107    0.514   0.114916
+7       49072   3.214318    0.459   0.126908
+8       45366   3.476899    0.435   0.123008
+
+Q2.
+
+Seqential program:
+% java hw4q2seq 7 200000000
+
+Parallel program:
+% java -Dpj.np=K hw4q2clu 7 200000000
+
+K       T       speedup     eff     edsf
+seq     35704
+1       36051   0.990375    0.990
+2       18168   1.965214    0.983   0.007905
+4       9263    3.854475    0.964   0.009255
+8       4969    7.185349    0.898   0.014666
+
+Q3.
+
+I spent literally 10 hours today trying to get the master/worker pattern working, and was unsuccessful. I think I messed something up with how I tracked the previous states of things, but I'm not sure and I don't have energy to debug anymore. I'm genuinely curious how to do this problem well, and fairly disappointed that we didn't cover this sort of thing more in class. I didn't want to just split up based on the first round of states generated because that's boring and stupid, though it would have been way easier. I would love to learn from a good solution to this problem if you could provide me with one to look at.
+
+- Max
