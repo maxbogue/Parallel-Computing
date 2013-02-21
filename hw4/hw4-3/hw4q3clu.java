@@ -32,6 +32,7 @@ public class hw4q3clu {
     private static int target;
     private static int k;
     private static int[] capacities;
+    private static long t1;
 
     private static void putInListChecked(List<State> ls, int[] b, State prev) {
         State newState = new State(b);
@@ -103,7 +104,7 @@ public class hw4q3clu {
         final int[] emptyBuckets = new int[k];
 
         // Start timing.
-        long t1 = System.currentTimeMillis();
+        t1 = System.currentTimeMillis();
 
         if (rank == 0) {
             new ParallelTeam(2).execute(new ParallelRegion() {
@@ -122,12 +123,6 @@ public class hw4q3clu {
         } else {
             worker(target);
         }
-
-        // Stop timing.
-        long t2 = System.currentTimeMillis();
-
-        // Print time results.
-        System.err.println((t2-t1) + " ms");
 
     }
 
@@ -193,12 +188,18 @@ public class hw4q3clu {
 
         } while (workerCount > 0);
 
+        // Stop timing.
+        long t2 = System.currentTimeMillis();
+
         // Print the result.
         if (solution != null) {
             printSteps(solution);
         } else {
             System.out.println("No solution found.");
         }
+
+        // Print time results.
+        System.err.println((t2-t1) + " ms");
 
     }
 
