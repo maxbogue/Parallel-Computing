@@ -18,7 +18,7 @@ import edu.rit.util.Range;
 
 public class hw4q3clu {
 
-    private static final int CHUNK_SIZE = 128;
+    private static final int CHUNK_SIZE = 1024;
     private static final int M = 0;
     private static final int W = 0;
 
@@ -128,8 +128,7 @@ public class hw4q3clu {
 
     private static Queue<State> splitChunk(Queue<State> queue, int n) {
         Queue<State> newQueue = new LinkedList<State>();
-        for (int i = 0; i < n; i++) {
-            if (queue.isEmpty()) return newQueue;
+        for (int i = 0; i < n && !queue.isEmpty(); i++) {
             newQueue.add(queue.remove());
         }
         return newQueue;
@@ -137,8 +136,10 @@ public class hw4q3clu {
 
     private static void master() throws Exception {
 
+        Map<State,State> masterPrevs = new HashMap<State,State>();
         Queue<State> masterQueue = new LinkedList<State>();
         State initial = new State(new int[k]);
+        masterPrevs.put(initial, null);
         masterQueue.addAll(nextStates(initial));
 
         // Figure out how many each subprocess gets.
@@ -161,6 +162,8 @@ public class hw4q3clu {
         State solution = null;
         int workerCount = size;
 
+        boolean[] empty = new boolean[size];
+
         do {
 
             CommStatus status = world.receive(null, M, inSolutionBuf);
@@ -169,21 +172,31 @@ public class hw4q3clu {
 
             solution = inSolutionBuf.item;
             masterQueue.addAll(inQueueBuf.item);
-             newPrevs = inPrevsBuf.item;
             for (Map.Entry<State,State> entry : inPrevsBuf.item.entrySet()) {
-                if (!prevs.containsKey(entry.getKey())) {
-                    prevs.put(entry.getKey(), entry.getValue());
+                if (!masterPrevs.containsKey(entry.getKey())) {
+                    masterPrevs.put(entry.getKey(), entry.getValue());
                 }
             }
 
             Queue<State> queueChunk;
-            if (solution == null) {
+            boolean allEmpty = true;
+            for (int i = 0; i < size; i++) {
+                allEmpty = allEmpty && empty[i];
+            }
+            if (solution == null && !allEmpty) {
                 queueChunk = splitChunk(masterQueue, CHUNK_SIZE);
             } else {
                 queueChunk = null;
                 workerCount--;
             }
             world.send(status.fromRank, W, ObjectBuf.buffer(queueChunk));
+            if (queueChunk == null || queueChunk.isEmpty()) {
+                empty[status.fromRank] = true;
+            } else {
+                for (int i = 0; i < size; i++) {
+                    empty[i] = false;
+                }
+            }
 
 
         } while (workerCount > 0);
@@ -193,7 +206,7 @@ public class hw4q3clu {
 
         // Print the result.
         if (solution != null) {
-            printSteps(solution);
+            printSteps(solution, masterPrevs);
         } else {
             System.out.println("No solution found.");
         }
@@ -241,10 +254,10 @@ public class hw4q3clu {
 
     }
 
-    private static void printSteps(State s) {
-        State p = prevs.get(s);
+    private static void printSteps(State s, Map<State,State> ps) {
+        State p = ps.get(s);
         if (p != null) {
-            printSteps(p);
+            printSteps(p, ps);
         }
         System.out.println(s);
     }
