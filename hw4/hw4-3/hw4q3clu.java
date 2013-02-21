@@ -155,7 +155,7 @@ public class hw4q3clu {
         }
 
         // Send the states to the subprocesses.
-        for (int i = 9; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             Queue<State> queueChunk = splitChunk(masterQueue, ranges[i].length());
             world.send(i, W, ObjectBuf.buffer(queueChunk));
         }
@@ -174,18 +174,24 @@ public class hw4q3clu {
 
             solution = inSolutionBuf.item;
             masterQueue.addAll(inQueueBuf.item);
-            prevs.putAll(inPrevsBuf.item);
-
-            if (solution == null) {
-                Queue<State> queueChunk = splitChunk(masterQueue, CHUNK_SIZE);
-                world.send(status.fromRank, W, ObjectBuf.buffer(queueChunk));
-            } else {
-                world.send(status.fromRank, W, ObjectBuf.emptyBuffer());
-                workerCount--;
+             newPrevs = inPrevsBuf.item;
+            for (Map.Entry<State,State> entry : inPrevsBuf.item.entrySet()) {
+                if (!prevs.containsKey(entry.getKey())) {
+                    prevs.put(entry.getKey(), entry.getValue());
+                }
             }
 
+            Queue<State> queueChunk;
+            if (solution == null) {
+                queueChunk = splitChunk(masterQueue, CHUNK_SIZE);
+            } else {
+                queueChunk = null;
+                workerCount--;
+            }
+            world.send(status.fromRank, W, ObjectBuf.buffer(queueChunk));
 
-        } while (!masterQueue.isEmpty() && workerCount > 0);
+
+        } while (workerCount > 0);
 
         // Print the result.
         if (solution != null) {
@@ -218,12 +224,11 @@ public class hw4q3clu {
             State s = null;
             while (!queue.isEmpty()) {
                 s = queue.remove();
-                if (prevs.containsKey(s)) continue;
                 if (s.hasBucket(target)) break;
                 newQueue.addAll(nextStates(s));
             }
 
-            if (s.hasBucket(target)) {
+            if (s != null && s.hasBucket(target)) {
                 world.send(0, M, ObjectBuf.buffer(s));
             } else {
                 world.send(0, M, ObjectBuf.emptyBuffer());
@@ -231,7 +236,7 @@ public class hw4q3clu {
             world.send(0, M, ObjectBuf.buffer(newQueue));
             world.send(0, M, ObjectBuf.buffer(newPrevs));
 
-        } while (queue != null);
+        } while (true);
 
     }
 
